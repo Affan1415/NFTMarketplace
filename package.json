@@ -1,0 +1,38 @@
+{
+  "name": "nfttemplatevideo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.4",
+    "@openzeppelin/contracts": "^4.9.5",
+    "axios": "^1.6.7",
+    "ethers": "^6.1.0",
+    "f": "^1.4.0",
+    "framer-motion": "^7.10.3",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.2.0",
+    "graceful-fs": "^4.2.11",
+    "graceful-js": "^1.0.0",
+    "hardhat": "^2.19.5",
+    "ipfs-http-client": "^60.0.1",
+    "jsonfile": "^6.1.0",
+    "next": "12.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.2",
+    "react-icons": "^4.4.0",
+    "react-scripts": "^5.0.1",
+    "web3modal": "^1.9.12",
+    "webpack": "^5.90.1",
+    "webpacks": "^1.0.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0"
+  }
+}
