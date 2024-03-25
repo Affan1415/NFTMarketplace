@@ -22,8 +22,16 @@ import {
 import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
 
 const Home = () => {
-  const { checkContract } = useContext(NFTMarketplaceContext);
+  const { checkIfWalletConnected } = useContext(NFTMarketplaceContext);
+  const { checkcontract } = useContext(NFTMarketplaceContext);
+  useEffect(()=> {
+    checkIfWalletConnected()
+  },[] )
+  useEffect(()=> {
+    checkcontract()
+  },[] )
 
+  
   return (
     <div className={Style.homePage}>
       <HeroSection />

@@ -1,4 +1,6 @@
 const  hre  = require("hardhat");
+const { ethers } = require("hardhat");
+
 
 async function main() {
   try {
@@ -7,7 +9,8 @@ async function main() {
 
     console.log("Contract deployed, waiting for confirmation...");
 
-    await nftMarketplace.deployed(); // Ensure contract is deployed
+    //await nftMarketplace.deployed(); // Ensure contract is deployed
+    console.log("NFTMarketplace deployed to:", nftMarketplace.address);
     console.log("NFTMarketplace deployed to:", nftMarketplace.target);
 
   } catch (error) {

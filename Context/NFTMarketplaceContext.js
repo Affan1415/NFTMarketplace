@@ -12,7 +12,7 @@ const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 //internal import
 
 import { NFTMarketplaceAddress, NFTMarketplaceABI } from './Constants';
-import { experimentalAddHardhatNetworkMessageTraceHook } from 'hardhat/config';
+
 
 
 //fetch contract
@@ -25,19 +25,41 @@ const fetchContract = async (signerOrProvider) =>
     );
 
 //connecting with smart contract
+// const connectingWithSmartContract = async () => {
+//     try {
+//         if (!window.ethereum) {
+//             console.log("MetaMask is not installed.");
+//             return null;
+//         }
+
+//         // Request user permission to connect
+//         await window.ethereum.request({ method: "eth_requestAccounts" });
+//         const provider = new ethers.providers.Web3Provider(window.ethereum);
+//         const signer = provider.getSigner();
+//         const contract = await fetchContract(signer);
+//         console.log(contract)
+//         return contract;
+//     } catch (error) {
+//         console.error("Error connecting to smart contract:", error);
+//         return null;
+//     }
+// }
 
 const connectingWithSmartContract = async () => {
     try {
         // const web3Modal = new Wenb3Modal()
-        // const connection = await web3Modal.connect()
-        // console.log(connection);
-        //const provider = new ethers.providers.Web3Provider(connection);
-        await window.ethereum.enable();
+        // const provider = new ethers.providers.Web3Provider(connection);
+        // await window.ethereum.enable();
+        const connection = await web3Modal.connect()
         const provider = new ethers.providers.Web3Provider(window.ethereum);
+        console.log("connection",connection);
+        console.log("provider")
+        console.log(provider)
+        
 
-        console.log(provider);
         const signer = await provider.getSigner();
         const contract = await fetchContract(signer)
+        console.log(contract)
         return contract;
 
     } catch (error) {
@@ -52,6 +74,11 @@ export const NFTMarketplaceContext = React.createContext();
 export const NFTMarketplaceProvider = (({ children }) => {
     const titleData = "Discover, collect and sell Nfts";
 
+    const checkcontract = async() =>{
+        const contract = await connectingWithSmartContract();
+        console.log(contract)
+    }
+
     const [currentAccount, setCurrentAccount] = useState("");
 
     //Check if wallet is empty 
@@ -62,11 +89,13 @@ export const NFTMarketplaceProvider = (({ children }) => {
 
             const accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-            if (accounts.length) {
-                setCurrentAccount(accounts[0])
+            console.log("Wallet connected:", accounts[0]);
+            setCurrentAccount(accounts[0])
+            if (accounts.length > 0) {
             } else {
                 console.log("no account found");
             }
+            console.log(currentAccount)
         } catch (error) {
             console.log("something went wrong while connecting to wallet".error);
         }
@@ -181,24 +210,65 @@ export const NFTMarketplaceProvider = (({ children }) => {
         }
     }
 
-    const fetchMyNFTsOrListedNFTs = async(type) => {
+    const fetchMyNFTsOrListedNFTs = async (type) => {
         try {
             const contract = await connectingWithSmartContract();
-            const data = type == "fetchItemsListed" 
-            ? await contract.fetchItemsListed()
-            : await contract.fetchMyNFTs();
+            const data = type == "fetchItemsListed"
+                ? await contract.fetchItemsListed()
+                : await contract.fetchMyNFTs();
 
-            const items = await promise
+            const items = await Promise.all(
+                data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
+                    const tokenURI = await contract.tokenURI(tokenId);
+                    const {
+                        data: { image, name, description },
+                    } = await axios.get(tokenURI)
+                    const price = ethers.utils.formatUnits(
+                        unformatedPrice.tostring(),
+                        "ethers"
+                    );
+                    return {
+                        price,
+                        tokenId: tokenId.toNumber(),
+                        seller,
+                        owner,
+                        image,
+                        name,
+                        description,
+                        tokenURI,
+                    };
+                })
+            )
+            return items;
         } catch (error) {
             console.log("error while fetching listed NFTs");
         }
     }
+
+    const buyNFT = async (nft) => {
+        try {
+            const contract = await connectingWithSmartContract();
+            const price = ethers.utils.parseUnits(nft.price.toString(), "ethers")
+
+            const transaction = await contract.createMarketSale(nft.tokenId, {
+                value: price,
+            });
+            await transaction.wait();
+        } catch (error) {
+            console.log("error buying nft")
+        }
+    }
     return (
         <NFTMarketplaceContext.Provider value={{
+            checkcontract,
             connectWallet,
+            checkIfWalletConnected,
             uploadToIpfs,
             createNFT,
             fetchNFT,
+            fetchMyNFTsOrListedNFTs,
+            buyNFT,
+            currentAccount,
             titleData
         }}
         >
