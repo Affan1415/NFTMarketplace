@@ -12,7 +12,8 @@ import images from "../img";
 import { Button } from "../components/componentsindex.js";
 import { DropZone } from "../UploadNFT/uploadNFTIndex.js";
 
-const UloadNFT = () => {
+const UloadNFT = ({uploadToIPFS,createNFT}) => {
+  const[price,setPrice]=useState("");
   const [active, setActive] = useState(0);
   const [itemName, setItemName] = useState("");
   const [website, setWebsite] = useState("");

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 //----IMPORT ICON
@@ -11,6 +11,7 @@ import Style from "./NavBar.module.css";
 import { Discover, HelpCenter, Notification, Profile, SideBar } from "./index";
 import { Button } from "../componentsindex";
 import images from "../../img";
+import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const NavBar = () => {
   //----USESTATE COMPONNTS
@@ -69,7 +70,8 @@ const NavBar = () => {
       setOpenSideMenu(false);
     }
   };
-
+//smart contract section
+  const{currentAccount ,connectWallet}= useContext(NFTMarketplaceContext);
   return (
     <div className={Style.navbar}>
       <div className={Style.navbar_container}>
@@ -157,7 +159,10 @@ const NavBar = () => {
       {/* SIDBAR CPMPONE/NT */}
       {openSideMenu && (
         <div className={Style.sideBar}>
-          <SideBar setOpenSideMenu={setOpenSideMenu} />
+          <SideBar 
+          setOpenSideMenu={setOpenSideMenu} 
+          currentAccount={currentAccount} 
+          connectWallet={connectWallet}/>
         </div>
       )}
     </div>

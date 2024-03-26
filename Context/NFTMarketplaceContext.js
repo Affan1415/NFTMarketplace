@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import Wenb3Modal from "web3modal";
-const { Web3Modal } = require("web3modal");
-import { ethers } from 'ethers';
-import Router from 'next/router';
+//const { Web3Modal } = require("web3modal");
+import { ethers } from "ethers";
+import Router from "next/router";
 import axios from "axios";
 
-import { create as ipfsHttpClient } from 'ipfs-http-client';
+import { create as ipfsHttpClient } from "ipfs-http-client";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 //internal import
 
-import { NFTMarketplaceAddress, NFTMarketplaceABI } from './Constants';
+import { NFTMarketplaceAddress, NFTMarketplaceABI } from "./Constants";
 
 
 
