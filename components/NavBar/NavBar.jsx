@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
 //----IMPORT ICON
@@ -11,6 +11,9 @@ import Style from "./NavBar.module.css";
 import { Discover, HelpCenter, Notification, Profile, SideBar } from "./index";
 import { Button } from "../componentsindex";
 import images from "../../img";
+
+//IMport from smart contract
+import { NFTMarketplaceContext } from "../../Context/NFTMarketplaceContext";
 
 const NavBar = () => {
   //----USESTATE COMPONNTS
@@ -70,6 +73,8 @@ const NavBar = () => {
     }
   };
 
+  const {currentAccount,connectWallet } = useContext(NFTMarketplaceContext);
+
   return (
     <div className={Style.navbar}>
       <div className={Style.navbar_container}>
@@ -85,7 +90,7 @@ const NavBar = () => {
           <div className={Style.navbar_container_left_box_input}>
             <div className={Style.navbar_container_left_box_input_box}>
               <input type="text" placeholder="Search NFT" />
-              <BsSearch onClick={() => {}} className={Style.search_icon} />
+              <BsSearch onClick={() => { }} className={Style.search_icon} />
             </div>
           </div>
         </div>
@@ -123,7 +128,14 @@ const NavBar = () => {
 
           {/* CREATE BUTTON SECTION */}
           <div className={Style.navbar_container_right_button}>
-            <Button btnName="Create" handleClick={() => {}} />
+            {currentAccount == "" ? (
+            <Button btnName="Connect" handleClick={() => connectWallet()}/>
+            ) : (
+            <a href="/uploadNFT">
+            <Button btnName="Create" handleClick={() => {}}/>
+            </a>
+            )}
+
           </div>
 
           {/* USER PROFILE */}
@@ -157,7 +169,11 @@ const NavBar = () => {
       {/* SIDBAR CPMPONE/NT */}
       {openSideMenu && (
         <div className={Style.sideBar}>
-          <SideBar setOpenSideMenu={setOpenSideMenu} />
+          <SideBar 
+          setOpenSideMenu={setOpenSideMenu} 
+          currentAccount = { currentAccount}
+          connectWallet = {connectWallet}
+          />
         </div>
       )}
     </div>

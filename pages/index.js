@@ -22,6 +22,7 @@ import {
 import { NFTMarketplaceContext } from "../Context/NFTMarketplaceContext";
 
 const Home = () => {
+  const { } = useContext(NFTMarketplaceContext);
   const { checkIfWalletConnected } = useContext(NFTMarketplaceContext);
   const { checkcontract } = useContext(NFTMarketplaceContext);
   useEffect(()=> {
