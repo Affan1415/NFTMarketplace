@@ -734,13 +734,13 @@ export const NFTMarketplaceProvider = (({ children }) => {
                     url: "https://api.pinata.cloud/pinning/pinFileToIPFS", // Corrected endpoint URL
                     data: formData,
                     headers: {
-                        'pinata_api_key': "c5c415144cf07f6cc28d",
-                        'pinata_secret_api_key': "a9a7159e2d18c5afd13d04a814d1958b0c1b4d71ecf8b75af920dbdbaf74b7dd",
+                        pinata_api_key: `c5c415144cf07f6cc28d`,
+                        pinata_secret_api_key: `a9a7159e2d18c5afd13d04a814d1958b0c1b4d71ecf8b75af920dbdbaf74b7dd`,
                         "Content-Type": "multipart/form-data",
                     }
                 });
     
-                const imgHash = `ipfs://${resFile.data.IpfsHash}`; // Corrected variable name and formatting
+                const imgHash = `https://gateway.pinata.cloud/ipfs/${resFile.data.IpfsHash}`; // Corrected variable name and formatting
                 console.log("IPFS Hash:", imgHash);
     
                 // Perform additional operations with the IPFS hash (e.g., store it, use it in a smart contract, etc.)
@@ -756,64 +756,56 @@ export const NFTMarketplaceProvider = (({ children }) => {
         }
     };
     
-    // const uploadToIpfs = async (e) => {
+ 
 
-    //     //e.preventDefault();
+        // const createNFT = async (formInput, fileUrl, router) => {
 
-    //     if (file) {
+        //     const { name, description, price } = formInput;
+        //     if (!name || !description || !price || !fileUrl)
+        //         return console.log("Data is Missing");
 
-    //         try {
-    //             const formData = new FormData();
-    //             formData.append("file", file);
+        //     const data = JSON.stringify({ name, description, image: fileUrl });
 
-    //             const resFile = await axios({
-    //                 method: "post",
-    //                 url: "https://api.pinata.cloud/pinning/pinFileTolPFS",
-    //                 data: formData,
-    //                 headers: {
-    //                     pinata_api_key:"c5c415144cf07f6cc28d",
-    //                     pinata_secret_api_key: "a9a7159e2d18c5afd13d04a814d1958b0c1b4d71ecf8b75af920dbdbaf74b7dd",
-    //                     "Content-Type": "multipart/form-data",
-    //                 }
-    //                 });
-    //             const ImgHash = `1pfs://${resFile.data. IpfsHash}`;
-    //             //const signer = contract.connect(provider.getSigner());
-    //             const signer = contract.connect(provider.getSigner());
-    //             signer.add(account, ImgHash);
-    //         } catch (e) {
-    //             alert("Unable to upload image to Pinata");
-    //         }
-    //     }
-    // }
-        // const uploadToIpfs = async (file) => {
         //     try {
-        //         const added = await client.add({ content: "file" });
-        //         //const url = await `${subdomain}/ipfs/${added.path}`;
-        //         const url = `https://${subdomain}.infura.io/ipfs/${added.path}`;
-        //         console.log(url);
-        //         return url;
+        //         const added = await client.add(data);
+        //         const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+        //         await creatSale(url, price);
         //     } catch (error) {
-        //         console.log("error uploading to ipfs", error);
+        //         console.log(error);
         //     }
+
         // }
-
-        const createNFT = async (formInput, fileUrl, router) => {
-
-            const { name, description, price } = formInput;
-            if (!name || !description || !price || !fileUrl)
-                return console.log("Data is Missing");
-
-            const data = JSON.stringify({ name, description, image: fileUrl });
-
-            try {
-                const added = await client.add(data);
-                const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-                await creatSale(url, price);
-            } catch (error) {
-                console.log(error);
+        const createNFT = async (Name, price, image, description, router) => {
+            if (!Name || !description || !price || !image) {
+                setError("Data Is Missing");
+                setOpenError(true);
+                return; // Added return statement to exit the function if data is missing
             }
-
-        }
+        
+            const data = JSON.stringify({ Name, description, image });
+        
+            try {
+                const response = await axios({
+                    method: "POST",
+                    url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+                    data: data,
+                    headers: {
+                        pinata_api_key: `c5c415144cf07f6cc28d`,
+                        pinata_secret_api_key: `a9a7159e2d18c5afd13d04a814d1958b0c1b4d71ecf8b75af920dbdbaf74b7dd`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+        
+                const url = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
+                console.log(url);
+                await creatSale(url, price);
+                router.push("/searchPage");
+            } catch (error) {
+                setError("Error while creating nft");
+                setOpenError(true);
+            }
+        };
+        
 
         const creatSale = async (url, formInputPrice, isReselling, id) => {
             try {

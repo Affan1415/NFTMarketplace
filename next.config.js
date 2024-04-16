@@ -8,8 +8,10 @@ module.exports = {
 
     return config;
   },
-  // images: {
-  //   domains: ['ipfs']
-  // },
+   images: {
+     domains: ["gateway.pinata.cloud"],
+     formats:["image/webp"],
+   },
   
 }
+  
