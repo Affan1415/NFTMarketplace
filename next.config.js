@@ -8,8 +8,8 @@ module.exports = {
 
     return config;
   },
-  images: {
-    domains: ['ipfs']
-  },
+  // images: {
+  //   domains: ['ipfs']
+  // },
   
 }
