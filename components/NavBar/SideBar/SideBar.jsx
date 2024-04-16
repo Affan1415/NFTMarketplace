@@ -174,7 +174,7 @@ const SideBar = ({ setOpenSideMenu,currentAccount,connectWallet }) => {
       <div className={Style.sideBar_button}>
         {currentAccount==""?( <Button btnName="connect" handleClick={()=>connectWallet()}/>
         ):(
-        <a href="/uploadNFT"><Button btnName="Create" handleClick={()=>{}}/></a>
+        <a href="./uploadNFT"><Button btnName="Create" handleClick={()=>{}}/></a>
         )}
         
         <Button btnName="Connect Wallet" handleClick={() => {}} />
