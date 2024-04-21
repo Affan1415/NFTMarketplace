@@ -212,6 +212,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
                     value: listingPrice.toString(),
                 });
                 console.log("822")
+                console.log("Token Created:", transaction.hash);
             }
             else {
                 transaction = await contract.reSellToken(url, price, {
@@ -220,7 +221,8 @@ export const NFTMarketplaceProvider = (({ children }) => {
                 console.log("828")
             }
 
-            await transaction.wait();
+            const reciept = await transaction.confirmations();
+            console.log(reciept)
             console.log("832")
             router.push('/searchPage');
         } catch (error) {
