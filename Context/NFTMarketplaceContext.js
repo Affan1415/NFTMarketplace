@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import { useRouter } from 'next/router';
-//import { NFTMarketplaceAddress, NFTMarketplaceABI } from './Constants';
+import { NFTMarketplaceAddress, NFTMarketplaceABI } from './Constants';
 import { create as ipfsHttpClient } from 'ipfs-http-client';
 //import axios from "axios";
 import { Web3Provider } from '@ethersproject/providers';
@@ -25,613 +25,6 @@ const client = ipfsHttpClient(
 )
 
 const subdomain = "mainnet"
-
-const NFTMarketplaceAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Update with your contract address
-const NFTMarketplaceABI = [{
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "approved",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
-    ],
-    "name": "ApprovalForAll",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_fromTokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_toTokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "BatchMetadataUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "seller",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "price",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "sold",
-        "type": "bool"
-      }
-    ],
-    "name": "MarketItemCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "MetadataUpdate",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "createMarketSale",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "tokenURI",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "price",
-        "type": "uint256"
-      }
-    ],
-    "name": "createToken",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "fetchItemsListed",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "seller",
-            "type": "address"
-          },
-          {
-            "internalType": "address payable",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "price",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "sold",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct NFTMarketplace.MarketItem[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "fetchMarketItems",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "seller",
-            "type": "address"
-          },
-          {
-            "internalType": "address payable",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "price",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "sold",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct NFTMarketplace.MarketItem[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "fetchMyNFTs",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address payable",
-            "name": "seller",
-            "type": "address"
-          },
-          {
-            "internalType": "address payable",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "price",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "sold",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct NFTMarketplace.MarketItem[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getApproved",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getListingPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      }
-    ],
-    "name": "isApprovedForAll",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "ownerOf",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "price",
-        "type": "uint256"
-      }
-    ],
-    "name": "resellToken",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
-    ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_listingPrice",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateListingPrice",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  }];
 
 const fetchContract = async (signer) => {
     return new ethers.Contract(NFTMarketplaceAddress, NFTMarketplaceABI, signer);
@@ -685,7 +78,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
         console.log(contract)
     }
     const [currentAccount, setCurrentAccount] = useState("");
-    const router =useRouter();
+    const router = useRouter();
     //Check if wallet is empty
     const checkIfWalletConnected = async () => {
         try {
@@ -760,248 +153,242 @@ export const NFTMarketplaceProvider = (({ children }) => {
         }
     };
 
-    
-
-        const createNFT = async (name, price, image, description, router) => {
-                if (!name || !description || !price || !image) {
-                    setError("Data Is Missing");
-                     setOpenError(true);
-                     return; // Added return statement to exit the function if data is missing
-                 }
-
-                 const data = JSON.stringify({ name, description, image });
-                 console.log(data)
-                 try {
-                     const response = await axios({
-                         method: "POST",
-                         url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-                         data: data,
-                         headers: {
-                            pinata_api_key: `a9c8a527338045f62636`,
-                            pinata_secret_api_key: `a6b865561109b28539a77b72959a7baa012e0c256282bd5447abcebe60a9c406`,
-                            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyZjhhYjBlZi1lOWVmLTRiNDUtODJmOC0zMTFiMmY5MDczZTAiLCJlbWFpbCI6ImFmZmFuemFoaXIyNkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYTljOGE1MjczMzgwNDVmNjI2MzYiLCJzY29wZWRLZXlTZWNyZXQiOiJhNmI4NjU1NjExMDliMjg1MzlhNzdiNzI5NTlhN2JhYTAxMmUwYzI1NjI4MmJkNTQ0N2FiY2ViZTYwYTljNDA2IiwiaWF0IjoxNzEzNjA2ODAwfQ.u9AWzhnHvz_DJRUSTWfCGYhEGCxDn0Cmv0iE3KQO2RM`,
-                            "Content-Type": "application/json",
-                        }
-                     });
-
-                     const url = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
-                     console.log(url);
-                     console.log("starting to create sale")
-                     await createSale(url, price,0,12);
-                     console.log("sale created")
-                     router.push("/searchPage");
-                 } catch (error) {
-                    console.error("Error while creating sale2003:", error);
-                    // Handle the error appropriately, such as displaying an error message to the user
-                    throw new Error("Unable to create sale");
-                 }
-             };
 
 
-             const createSale = async (url, formInputPrice, isReselling ,id) => {
-                try {
-                    
-                    const price = ethers.parseEther(formInputPrice, "ether");
-                    //const price = ethers.formatEther(formInputPrice.toString());
-                   // const price = BigInt(pric); 
-                    
+    const createNFT = async (name, price, image, description, router) => {
+        if (!name || !description || !price || !image) {
+            setError("Data Is Missing");
+            setOpenError(true);
+            return; // Added return statement to exit the function if data is missing
+        }
 
-                    console.log(price)
-                    const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
-                    console.log(contract)
-                    console.log(contract.getListingPrice())
-                    const listingPrice = await contract.getListingPrice();
-                    console.log("809");
-            
-                    let transaction;
-                    isReselling=0;
-                    console.log("815")
-                    if (!isReselling) {
-                        transaction = await contract.createToken(url, price);
-                        console.log("816")
-                    }
-                    if (!isReselling) {
-                        transaction = await contract.createToken(url, price, {
-                            value: listingPrice.toString(),
-                        });
-                        console.log("822")
-                    }
-                     else {
-                        transaction = await contract.reSellToken(url, price, {
-                            value: listingPrice.toString(),
-                        });
-                        console.log("828")
-                    }
-            
-                    await transaction.wait();
-                    console.log("832")
-                    router.push('/searchPage');
-                } catch (error) {
-                    console.error("Error while creating sale:", error);
-                    // Handle the error appropriately, such as displaying an error message to the user
-                    throw new Error("Unable to create sale"); // Throw an error for further handling if needed
+        const data = JSON.stringify({ name, description, image });
+        console.log(data)
+        try {
+            const response = await axios({
+                method: "POST",
+                url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+                data: data,
+                headers: {
+                    pinata_api_key: `a9c8a527338045f62636`,
+                    pinata_secret_api_key: `a6b865561109b28539a77b72959a7baa012e0c256282bd5447abcebe60a9c406`,
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyZjhhYjBlZi1lOWVmLTRiNDUtODJmOC0zMTFiMmY5MDczZTAiLCJlbWFpbCI6ImFmZmFuemFoaXIyNkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYTljOGE1MjczMzgwNDVmNjI2MzYiLCJzY29wZWRLZXlTZWNyZXQiOiJhNmI4NjU1NjExMDliMjg1MzlhNzdiNzI5NTlhN2JhYTAxMmUwYzI1NjI4MmJkNTQ0N2FiY2ViZTYwYTljNDA2IiwiaWF0IjoxNzEzNjA2ODAwfQ.u9AWzhnHvz_DJRUSTWfCGYhEGCxDn0Cmv0iE3KQO2RM`,
+                    "Content-Type": "application/json",
                 }
-            };
-            
-            // const createSale = async (url, formInputPrice, isReselling, id) => {
-            //     console.log("entering create sale");
-            //     try {
-            //         console.log("entering try block");
-                   
-            
-            //         // Check if MetaMask or another Ethereum provider is available
-            //         if (!window.ethereum) {
-            //             throw new Error("MetaMask or an Ethereum provider is not available");
-            //         }
-            
-            //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-            //         console.log("the provider is");
-            //         console.log(provider);
-            //         const signer = provider.getSigner();
-            //         console.log("signer");
-            //         console.log(signer);
+            });
 
-            
-            //         // Request access to user accounts (wallet) using MetaMask
-            //         await provider.send("eth_requestAccounts", []);
-            //         console.log("854");
-            //         const price = ethers.utils.parseUnits(formInputPrice, "ether");
-            //         console.log("856");
-            //         const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
-            //         console.log("858");
-            //         const listingPrice = await contract.getListingPrice();
-            //         console.log("860");
-            //         let transaction;
-            //         if (!isReselling) {
-            //             transaction = await contract.connect(signer).createToken(url, price, {
-            //                 value: listingPrice.toString(),
-            //             });
-
-            //         } else {
-            //             transaction = await contract.connect(signer).reSellToken(url, price, {
-            //                 value: listingPrice.toString(),
-            //             });
-            //         }
-            //         console.log("872");
-            
-            //         await transaction.wait();
-            //         console.log("Sale created successfully");
-            //         router.push('/searchPage');
-            //     } catch (error) {
-            //         console.error("Error while creating sale:", error);
-            //         // Handle the error appropriately, such as displaying an error message to the user
-            //         throw new Error("Unable to create sale"); // Throw an error for further handling if needed
-            //     }
-            // };
-            
-
-        const fetchNFT = async () => {
-            try {
-                const provider = new ethers.providers.JsonRpcProvider();
-                const contract = fetchContract(provider);
-
-                const data = await contract.fetchMarketItem();
-
-                console.log(data);
-
-                const items = await Promise.all(
-                    data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
-                        const tokenURI = await contract.tokenURI(tokenId);
-                        const {
-                            data: { image, name, description },
-                        } = await axios.get(tokenURI);
-
-                        const price = ethers.utils.formatUnits(
-                            unformatedPrice.toString(), "ether"
-                        );
-                        return {
-                            price,
-                            tokenId: tokenId.toNumber(),
-                            seller,
-                            owner,
-                            image,
-                            name,
-                            description,
-                            tokenURI
-
-                        }
-                    })
-
-
-                )
-                return items;
-            } catch (error) {
-                console.log("error while fetching NFTs", error);
-            }
-        };
-        useEffect(()=>{
-            fetchMyNFTsOrListedNFTs();
-        },[]);
-
-        const fetchMyNFTsOrListedNFTs = async (type) => {
-            try {
-                const contract = await connectingWithSmartContract();
-                const data = type == "fetchItemsListed"
-                    ? await contract.fetchItemsListed()
-                    : await contract.fetchMyNFTs();
-
-                const items = await Promise.all(
-                    data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
-                        const tokenURI = await contract.tokenURI(tokenId);
-                        const {
-                            data: { image, name, description },
-                        } = await axios.get(tokenURI)
-                        const price = ethers.utils.formatUnits(
-                            unformatedPrice.tostring(),
-                            "ethers"
-                        );
-                        return {
-                            price,
-                            tokenId: tokenId.toNumber(),
-                            seller,
-                            owner,
-                            image,
-                            name,
-                            description,
-                            tokenURI,
-                        };
-                    })
-                )
-                return items;
-            } catch (error) {
-                console.log("error while fetching listed NFTs");
-            }
+            const url = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
+            console.log(url);
+            console.log("starting to create sale")
+            await createSale(url, price, 0, 12);
+            console.log("sale created")
+            router.push("/searchPage");
+        } catch (error) {
+            console.error("Error while creating sale2003:", error);
+            // Handle the error appropriately, such as displaying an error message to the user
+            throw new Error("Unable to create sale");
         }
+    };
 
-        const buyNFT = async (nft) => {
-            try {
-                const contract = await connectingWithSmartContract();
-                const price = ethers.utils.parseUnits(nft.price.toString(), "ethers")
 
-                const transaction = await contract.createMarketSale(nft.tokenId, {
-                    value: price,
+    const createSale = async (url, formInputPrice, isReselling, id) => {
+        try {
+
+            const price = ethers.parseEther(formInputPrice, "ether");
+            //const price = ethers.formatEther(formInputPrice.toString());
+            // const price = BigInt(pric); 
+            console.log(price)
+            const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
+            console.log(contract)
+            console.log(contract.getListingPrice())
+            const listingPrice = await contract.getListingPrice();
+            console.log(listingPrice);
+
+            let transaction;
+            isReselling = 0;
+            console.log("815")
+            if (!isReselling) {
+                transaction = await contract.createToken(url, price, {
+                    value: listingPrice.toString(),
                 });
-                await transaction.wait();
-            } catch (error) {
-                console.log("error buying nft")
+                console.log("822")
             }
+            else {
+                transaction = await contract.reSellToken(url, price, {
+                    value: listingPrice.toString(),
+                });
+                console.log("828")
+            }
+
+            await transaction.wait();
+            console.log("832")
+            router.push('/searchPage');
+        } catch (error) {
+            console.error("Error while creating sale:", error);
+            // Handle the error appropriately, such as displaying an error message to the user
+            throw new Error("Unable to create sale"); // Throw an error for further handling if needed
         }
-        return (
-            <NFTMarketplaceContext.Provider value={{
-                checkcontract,
-                connectWallet,
-                checkIfWalletConnected,
-                uploadToIpfs,
-                createNFT,
-                fetchNFT,
-                fetchMyNFTsOrListedNFTs,
-                createSale,
-                buyNFT,
-                currentAccount,
-                titleData
-            }}
-            >
-                {children}
-            </NFTMarketplaceContext.Provider>
-        )
-    })
+    };
+
+    // const createSale = async (url, formInputPrice, isReselling, id) => {
+    //     console.log("entering create sale");
+    //     try {
+    //         console.log("entering try block");
+
+
+    //         // Check if MetaMask or another Ethereum provider is available
+    //         if (!window.ethereum) {
+    //             throw new Error("MetaMask or an Ethereum provider is not available");
+    //         }
+
+    //         const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //         console.log("the provider is");
+    //         console.log(provider);
+    //         const signer = provider.getSigner();
+    //         console.log("signer");
+    //         console.log(signer);
+
+
+    //         // Request access to user accounts (wallet) using MetaMask
+    //         await provider.send("eth_requestAccounts", []);
+    //         console.log("854");
+    //         const price = ethers.utils.parseUnits(formInputPrice, "ether");
+    //         console.log("856");
+    //         const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
+    //         console.log("858");
+    //         const listingPrice = await contract.getListingPrice();
+    //         console.log("860");
+    //         let transaction;
+    //         if (!isReselling) {
+    //             transaction = await contract.connect(signer).createToken(url, price, {
+    //                 value: listingPrice.toString(),
+    //             });
+
+    //         } else {
+    //             transaction = await contract.connect(signer).reSellToken(url, price, {
+    //                 value: listingPrice.toString(),
+    //             });
+    //         }
+    //         console.log("872");
+
+    //         await transaction.wait();
+    //         console.log("Sale created successfully");
+    //         router.push('/searchPage');
+    //     } catch (error) {
+    //         console.error("Error while creating sale:", error);
+    //         // Handle the error appropriately, such as displaying an error message to the user
+    //         throw new Error("Unable to create sale"); // Throw an error for further handling if needed
+    //     }
+    // };
+
+
+    const fetchNFT = async () => {
+        try {
+            const provider = new ethers.providers.JsonRpcProvider();
+            const contract = fetchContract(provider);
+
+            const data = await contract.fetchMarketItem();
+
+            console.log(data);
+
+            const items = await Promise.all(
+                data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
+                    const tokenURI = await contract.tokenURI(tokenId);
+                    const {
+                        data: { image, name, description },
+                    } = await axios.get(tokenURI);
+
+                    const price = ethers.utils.formatUnits(
+                        unformatedPrice.toString(), "ether"
+                    );
+                    return {
+                        price,
+                        tokenId: tokenId.toNumber(),
+                        seller,
+                        owner,
+                        image,
+                        name,
+                        description,
+                        tokenURI
+
+                    }
+                })
+
+
+            )
+            return items;
+        } catch (error) {
+            console.log("error while fetching NFTs", error);
+        }
+    };
+    useEffect(() => {
+        fetchMyNFTsOrListedNFTs();
+    }, []);
+
+    const fetchMyNFTsOrListedNFTs = async (type) => {
+        try {
+            const contract = await connectingWithSmartContract();
+            const data = type == "fetchItemsListed"
+                ? await contract.fetchItemsListed()
+                : await contract.fetchMyNFTs();
+
+            const items = await Promise.all(
+                data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
+                    const tokenURI = await contract.tokenURI(tokenId);
+                    const {
+                        data: { image, name, description },
+                    } = await axios.get(tokenURI)
+                    const price = ethers.utils.formatUnits(
+                        unformatedPrice.tostring(),
+                        "ethers"
+                    );
+                    return {
+                        price,
+                        tokenId: tokenId.toNumber(),
+                        seller,
+                        owner,
+                        image,
+                        name,
+                        description,
+                        tokenURI,
+                    };
+                })
+            )
+            return items;
+        } catch (error) {
+            console.log("error while fetching listed NFTs");
+        }
+    }
+
+    const buyNFT = async (nft) => {
+        try {
+            const contract = await connectingWithSmartContract();
+            const price = ethers.utils.parseUnits(nft.price.toString(), "ethers")
+
+            const transaction = await contract.createMarketSale(nft.tokenId, {
+                value: price,
+            });
+            await transaction.wait();
+        } catch (error) {
+            console.log("error buying nft")
+        }
+    }
+    return (
+        <NFTMarketplaceContext.Provider value={{
+            checkcontract,
+            connectWallet,
+            checkIfWalletConnected,
+            uploadToIpfs,
+            createNFT,
+            fetchNFT,
+            fetchMyNFTsOrListedNFTs,
+            createSale,
+            buyNFT,
+            currentAccount,
+            titleData
+        }}
+        >
+            {children}
+        </NFTMarketplaceContext.Provider>
+    )
+})
