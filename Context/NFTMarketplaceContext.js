@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+//import { ethers } from 'ethers';
+const { ethers, JsonRpcProvider } = require('ethers');
 import Web3Modal from 'web3modal';
 import { useRouter } from 'next/router';
 import { NFTMarketplaceAddress, NFTMarketplaceABI } from './Constants';
@@ -232,99 +233,89 @@ export const NFTMarketplaceProvider = (({ children }) => {
         }
     };
 
-    // const createSale = async (url, formInputPrice, isReselling, id) => {
-    //     console.log("entering create sale");
+    
+
+    // const fetchNFT = async () => {
     //     try {
-    //         console.log("entering try block");
+    //         const provider = new ethers.providers.JsonRpcProvider();
+    //         const contract = fetchContract(provider);
+
+    //         const data = await contract.fetchMarketItems();
+
+    //         console.log(data);
+
+    //         const items = await Promise.all(
+    //             data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
+    //                 const tokenURI = await contract.tokenURI(tokenId);
+    //                 const {
+    //                     data: { image, name, description },
+    //                 } = await axios.get(tokenURI);
+
+    //                 const price = ethers.utils.formatUnits(
+    //                     unformatedPrice.toString(), "ether"
+    //                 );
+    //                 return {
+    //                     price,
+    //                     tokenId: tokenId.toNumber(),
+    //                     seller,
+    //                     owner,
+    //                     image,
+    //                     name,
+    //                     description,
+    //                     tokenURI
+
+    //                 }
+    //             })
 
 
-    //         // Check if MetaMask or another Ethereum provider is available
-    //         if (!window.ethereum) {
-    //             throw new Error("MetaMask or an Ethereum provider is not available");
-    //         }
-
-    //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-    //         console.log("the provider is");
-    //         console.log(provider);
-    //         const signer = provider.getSigner();
-    //         console.log("signer");
-    //         console.log(signer);
-
-
-    //         // Request access to user accounts (wallet) using MetaMask
-    //         await provider.send("eth_requestAccounts", []);
-    //         console.log("854");
-    //         const price = ethers.utils.parseUnits(formInputPrice, "ether");
-    //         console.log("856");
-    //         const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
-    //         console.log("858");
-    //         const listingPrice = await contract.getListingPrice();
-    //         console.log("860");
-    //         let transaction;
-    //         if (!isReselling) {
-    //             transaction = await contract.connect(signer).createToken(url, price, {
-    //                 value: listingPrice.toString(),
-    //             });
-
-    //         } else {
-    //             transaction = await contract.connect(signer).reSellToken(url, price, {
-    //                 value: listingPrice.toString(),
-    //             });
-    //         }
-    //         console.log("872");
-
-    //         await transaction.wait();
-    //         console.log("Sale created successfully");
-    //         router.push('/searchPage');
+    //         )
+    //         return items;
     //     } catch (error) {
-    //         console.error("Error while creating sale:", error);
-    //         // Handle the error appropriately, such as displaying an error message to the user
-    //         throw new Error("Unable to create sale"); // Throw an error for further handling if needed
+    //         console.log("error while fetching NFTs", error);
     //     }
     // };
-
-
     const fetchNFT = async () => {
         try {
-            const provider = new ethers.providers.JsonRpcProvider();
-            const contract = fetchContract(provider);
-
-            const data = await contract.fetchMarketItem();
-
+            const provider = new JsonRpcProvider();
+            const signer = await provider.getSigner();
+            const contract = new ethers.Contract(NFTMarketplaceAddress, NFTMarketplaceABI, signer);
+    
+            console.log(293);
+            const data = await contract.fetchMarketItems();
+            console.log(295);
             console.log(data);
-
+            console.log(299);
+    
             const items = await Promise.all(
                 data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
                     const tokenURI = await contract.tokenURI(tokenId);
                     const {
                         data: { image, name, description },
                     } = await axios.get(tokenURI);
-
-                    const price = ethers.utils.formatUnits(
-                        unformatedPrice.toString(), "ether"
-                    );
+    
+                    const price = ethers.parseEther(unformatedPrice.toString(), "ether");
                     return {
                         price,
-                        tokenId: tokenId.toNumber(),
+                        tokenId: Number(tokenId),
                         seller,
                         owner,
                         image,
                         name,
                         description,
                         tokenURI
-
-                    }
+                    };
                 })
-
-
-            )
+            );
+    
+            console.log("items is",items); // Log items for debugging
             return items;
         } catch (error) {
-            console.log("error while fetching NFTs", error);
+            console.error("Error while fetching NFTs:", error); // Log the specific error
+            throw error; // Rethrow the error to propagate it further if needed
         }
     };
     useEffect(() => {
-        fetchMyNFTsOrListedNFTs();
+        fetchNFT();
     }, []);
 
     const fetchMyNFTsOrListedNFTs = async (type) => {

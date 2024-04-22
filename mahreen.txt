@@ -5,3 +5,45 @@ API Key: a9c8a527338045f62636
  JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyZjhhYjBlZi1lOWVmLTRiNDUtODJmOC0zMTFiMmY5MDczZTAiLCJlbWFpbCI6ImFmZmFuemFoaXIyNkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiYTljOGE1MjczMzgwNDVmNjI2MzYiLCJzY29wZWRLZXlTZWNyZXQiOiJhNmI4NjU1NjExMDliMjg1MzlhNzdiNzI5NTlhN2JhYTAxMmUwYzI1NjI4MmJkNTQ0N2FiY2ViZTYwYTljNDA2IiwiaWF0IjoxNzEzNjA2ODAwfQ.u9AWzhnHvz_DJRUSTWfCGYhEGCxDn0Cmv0iE3KQO2RM
 
  curl -X POST \ https://api.pinata.cloud/pinning/pinFileToIPFS \ -H 'pinata_api_key: c5c415144cf07f6cc28d' \ -H 'pinata_secret_api_key: a9a7159e2d18c5afd13d04a814d1958b0c1b4d71ecf8b75af920dbdbaf74b7dd' \ -H 'Content-Type: multipart/form-data' \ -F 'file=@C:/Users/DELL/Desktop/q1_screenshot/1.jpg'
+
+
+const fetchNFT = async () => {
+    try {
+        const provider = new JsonRpcProvider();
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(NFTMarketplaceAddress, NFTMarketplaceABI, signer);
+
+        console.log(293);
+        const data = await contract.fetchMarketItems();
+        console.log(295);
+        console.log(data);
+        console.log(299);
+
+        const items = await Promise.all(
+            data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
+                const tokenURI = await contract.tokenURI(tokenId);
+                const {
+                    data: { image, name, description },
+                } = await axios.get(tokenURI);
+
+                const price = ethers.parseEther(unformatedPrice.toString(), "ether");
+                return {
+                    price,
+                    tokenId: tokenId.toNumber(),
+                    seller,
+                    owner,
+                    image,
+                    name,
+                    description,
+                    tokenURI
+                };
+            })
+        );
+
+        console.log(items); // Log items for debugging
+        return items;
+    } catch (error) {
+        console.error("Error while fetching NFTs:", error); // Log the specific error
+        throw error; // Rethrow the error to propagate it further if needed
+    }
+};
