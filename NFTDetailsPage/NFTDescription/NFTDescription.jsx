@@ -167,14 +167,7 @@ const NFTDescription = ({ nft }) => {
                 height={40}
                 className={Style.NFTDescription_box_profile_box_left_img}
               />
-              <div className={Style.NFTDescription_box_profile_box_left_info}>
-                <small>Creator</small> <br />
-                <Link href={{pathname: "/author" , query:'${nft.seller}'}}>
-                <span>
-                  Karli Costa <MdVerified />
-                </span>
-                </Link>
-              </div>
+              
             </div>
 
             <div className={Style.NFTDescription_box_profile_box_right}>
@@ -186,69 +179,28 @@ const NFTDescription = ({ nft }) => {
                 className={Style.NFTDescription_box_profile_box_left_img}
               />
 
-              <div className={Style.NFTDescription_box_profile_box_right_info}>
-                <small>collection</small> <br />
-                <span>
-                   <MdVerified />
-                </span>
-              </div>
+             
             </div>
           </div>
 
           <div className={Style.NFTDescription_box_profile_biding}>
-            <p>
-              <MdTimer /> <span>Auction ending in:</span>
-            </p>
+            
 
-            <div className={Style.NFTDescription_box_profile_biding_box_timer}>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>2</p>
-                <span>Days</span>
-              </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>22</p>
-                <span>hours</span>
-              </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>45</p>
-                <span>mins</span>
-              </div>
-              <div
-                className={
-                  Style.NFTDescription_box_profile_biding_box_timer_item
-                }
-              >
-                <p>12</p>
-                <span>secs</span>
-              </div>
-            </div>
-
+            
             <div className={Style.NFTDescription_box_profile_biding_box_price}>
               <div
                 className={
                   Style.NFTDescription_box_profile_biding_box_price_bid
                 }
               >
-                <small>Current Bid</small>
+                <small>Current price</small>
                 <p>
         
-                  {nft.price} ETH <span>( ≈ $3,221.22)</span>
+                  {nft.price} <span></span>
                 </p>
               </div>
 
-              <span>[96 in stock]</span>
+              
             </div>
 
             <div className={Style.NFTDescription_box_profile_biding_box_button}>
