@@ -124,7 +124,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
             try {
                 const formData = new FormData();
                 formData.append("file", file);
-
+                console.log(formData)
                 const resFile = await axios({
                     method: "post",
                     url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
@@ -142,7 +142,11 @@ export const NFTMarketplaceProvider = (({ children }) => {
 
                 // Perform additional operations with the IPFS hash (e.g., store it, use it in a smart contract, etc.)
                 // Example: signer.add(account, imgHash);
-
+                if(resFile.data.isDuplicate === true)
+                {
+                    alert("NFT already uploaded");
+                    return;
+                }
                 return imgHash; // Return the IPFS hash for further use
             } catch (error) {
                 console.error("Error uploading image to Pinata:", error.response.data); // Log the detailed error response
@@ -177,11 +181,16 @@ export const NFTMarketplaceProvider = (({ children }) => {
                     "Content-Type": "application/json",
                 }
             });
-
+            if(response.data.isDuplicate === true)
+            {
+                alert("NFT already uploaded");
+                return;
+            }
             const url = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
             console.log(url);
             console.log("starting to create sale")
-            await createSale(url, price, 0, 12);
+            if(response)
+            await createSale(url, price);
             console.log("sale created")
             router.push("/searchPage");
         } catch (error) {
@@ -194,7 +203,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
 
     const createSale = async (url, formInputPrice, isReselling, id) => {
         try {
-            
+
             const price = ethers.parseEther(formInputPrice, "ether");
             // const price = ethers.formatEther(formInputPrice.toString());
             // const price = BigInt(pric); 
@@ -205,8 +214,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
             const listingPrice = await contract.getListingPrice();
             console.log(listingPrice);
 
-            let transaction;
-            isReselling = 0;
+            let transaction = !isReselling;
             console.log("815")
             if (!isReselling) {
                 transaction = await contract.createToken(url, price, {
@@ -228,40 +236,39 @@ export const NFTMarketplaceProvider = (({ children }) => {
             router.push('/searchPage');
         } catch (error) {
             console.error("Error while creating sale:", error);
-            // Handle the error appropriately, such as displaying an error message to the user
             throw new Error("Unable to create sale"); // Throw an error for further handling if needed
         }
     };
 
-    
+
 
     const fetchNFT = async () => {
         try {
             const provider = new JsonRpcProvider();
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(NFTMarketplaceAddress, NFTMarketplaceABI, signer);
-    
+
             console.log(293);
             const data = await contract.fetchMarketItems();
             console.log(295);
             console.log(data);
             console.log(299);
-    
+
             const items = await Promise.all(
                 data.map(async ({ tokenId, seller, owner, price: unformatedPrice }) => {
                     const tokenURI = await contract.tokenURI(tokenId);
                     console.log(tokenURI)
                     const {
-                        data: { image, name, description},
+                        data: { image, name, description },
                     } = await axios.get(tokenURI);
-                  
-                //    const price = ethers.parseEther(unformatedPrice.toString(), "ether");
-                //    price=price.toString();
-                const price=Number(unformatedPrice);
-               // price=price/1000000000000000000;
-                   
-                   
-                    console.log("the price is",price);
+
+                    //    const price = ethers.parseEther(unformatedPrice.toString(), "ether");
+                    //    price=price.toString();
+                    const price = Number(unformatedPrice);
+                    // price=price/1000000000000000000;
+
+
+                    console.log("the price is", price);
                     return {
                         price,
                         tokenId: Number(tokenId),
@@ -274,8 +281,8 @@ export const NFTMarketplaceProvider = (({ children }) => {
                     };
                 })
             );
-    
-            console.log("items is",items); // Log items for debugging
+
+            console.log("items is", items); // Log items for debugging
             return items;
         } catch (error) {
             console.error("Error while fetching NFTs:", error); // Log the specific error
@@ -324,12 +331,12 @@ export const NFTMarketplaceProvider = (({ children }) => {
     const buyNFT = async (nft) => {
         console.log(nft);
         try {
-            
+
             const contract = await connectingWithSmartContract();
             //const price = ethers.parseUnits(nft.price.toString(), "ethers")
             const price = nft.price;
-            
-            
+
+
             // // const contract = await connectingWithSmartContract(); // Assuming connectingWithSmartContract() is a valid function
             // // console.log(contract)
             // // console.log(325)
@@ -339,13 +346,13 @@ export const NFTMarketplaceProvider = (({ children }) => {
             // // console.log(327)
             // const priceAsString = nft.price.toString().slice(0, -1);
             // const formattedPrice = `${priceAsString.slice(0, -18)}.${priceAsString.slice(-18)} ETH`;
-    
+
             // console.log("the formatted price is", formattedPrice);
-    
+
             // const price = ethers.parseEther(priceAsString); // Parse the formatted price as Ether
-    
+
             // console.log("the price in Ether is", ethers.utils.formatEther(price));
- 
+
             const transaction = await contract.createMarketSale(nft.tokenId, {
                 value: price,
             });
@@ -353,7 +360,7 @@ export const NFTMarketplaceProvider = (({ children }) => {
             console.log(reciept)
             router.push("/author")
         } catch (error) {
-            console.log("error buying nft",error)
+            console.log("error buying nft", error)
         }
     }
     return (

@@ -128,16 +128,15 @@ const NavBar = () => {
 
           {/* CREATE BUTTON SECTION */}
           <div className={Style.navbar_container_right_button}>
-            {currentAccount == "" ? (
+            {currentAccount === undefined || currentAccount === "" ? (
             <Button btnName="Connect" handleClick={() => connectWallet()}/>
             ) : (
             <a href="/uploadNFT">
             <Button btnName="Create" handleClick={() => {}}/>
             </a>
             )}
-
+            {console.log("Current account:", currentAccount)}
           </div>
-
           {/* USER PROFILE */}
 
           <div className={Style.navbar_container_right_profile_box}>
