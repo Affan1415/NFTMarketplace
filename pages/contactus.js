@@ -1,66 +1,61 @@
-import React from "react";
-import {
-  TiSocialFacebook,
-  TiSocialLinkedin,
-  TiSocialTwitter,
-  TiSocialYoutube,
-  TiSocialInstagram,
-} from "react-icons/ti";
+import React, { useState } from "react";
 import { HiOutlineMail } from "react-icons/hi";
-
-//INTERNAL IMPORT
+import { Button } from "../components/componentsindex";
 import Style from "../styles/contactus.module.css";
 import formStyle from "../AccountPage/Form/Form.module.css";
-import { Button } from "../components/componentsindex";
+import axios from "axios";
 
-const contactus = () => {
+const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [feedback, setFeedback] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    //e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:3000/api/v1/contact/contact-us",
+        formData
+      );
+      alert("email sent successfully")
+      setFeedback("Message sent successfully!");
+      // Clear form data after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setFeedback("An error occurred. Please try again later.");
+    }
+  };
+
   return (
     <div className={Style.contactus}>
       <div className={Style.contactus_box}>
         <h1>Contact</h1>
         <div className={Style.contactus_box_box}>
           <div className={Style.contactus_box_box_left}>
-            <div className={Style.contactus_box_box_left_item}>
-              <h3>🗺 ADDRESS</h3>
-              <p>
-                Photo booth tattooed prism, portland taiyaki hoodie neutra
-                typewriter
-              </p>
-            </div>
-            <div className={Style.contactus_box_box_left_item}>
-              <h3>💌 EMAIL</h3>
-              <p>nc.example@example.com</p>
-            </div>
-            <div className={Style.contactus_box_box_left_item}>
-              <h3>☎ PHONE</h3>
-              <p>000-123-456-7890</p>
-            </div>
-            <div className={Style.contactus_box_box_left_item}>
-              <h3>🌏 SOCIALS</h3>
-              <a href="#">
-                <TiSocialFacebook />
-              </a>
-              <a href="#">
-                <TiSocialLinkedin />
-              </a>
-              <a href="#">
-                <TiSocialInstagram />
-              </a>
-              <a href="#">
-                <TiSocialYoutube />
-              </a>
-              <a href="#">
-                <TiSocialTwitter />
-              </a>
-            </div>
+            {/* Left section content */}
           </div>
           <div className={Style.contactus_box_box_right}>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className={formStyle.Form_box_input}>
                 <label htmlFor="name">Full Name</label>
                 <input
                   type="text"
-                  placeholder="shoaib bhai"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
                   className={formStyle.Form_box_input_userName}
                 />
               </div>
@@ -70,24 +65,27 @@ const contactus = () => {
                   <div className={formStyle.Form_box_input_box_icon}>
                     <HiOutlineMail />
                   </div>
-                  <input type="text" placeholder="Email*" />
+                  <input
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                  />
                 </div>
               </div>
               <div className={formStyle.Form_box_input}>
-                <label htmlFor="description">Message</label>
+                <label htmlFor="message">Message</label>
                 <textarea
-                  name=""
-                  id=""
-                  cols="30"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Enter your message"
                   rows="6"
-                  placeholder="something about yourself in few words"
                 ></textarea>
               </div>
-              <Button
-                btnName="Send Message"
-                handleClick={() => {}}
-                classStyle={Style.button}
-              />
+              <Button btnName="Send Message" handleClick={handleSubmit} classStyle={Style.button} />
+              {feedback && <p>{feedback}</p>}
             </form>
           </div>
         </div>
@@ -96,4 +94,4 @@ const contactus = () => {
   );
 };
 
-export default contactus;
+export default ContactUs;
