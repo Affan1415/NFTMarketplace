@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useCallback, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
+import axios from "axios";
 
 //INTERNAL IMPORT
 import Style from "../styles/account.module.css";
@@ -9,10 +10,37 @@ import From from "../AccountPage/Form/Form";
 
 const account = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-  const onDrop = useCallback(async (acceptedFile) => {
-    setFileUrl(acceptedFile[0]);
+  const getTokenFromStorage = () => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    return token;
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = getTokenFromStorage();
+        if (!token) return; // If token is not found, return early
+        const userId = localStorage.getItem("id"); // Assuming you have a function to extract user ID from the token
+        const response = await axios.get(`http://127.0.0.1/api/v1/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
+
+  const onDrop = async (acceptedFile) => {
+    setFileUrl(acceptedFile[0]);
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -34,7 +62,7 @@ const account = () => {
         <div className={Style.account_box_img} {...getRootProps()}>
           <input {...getInputProps()} />
           <Image
-            src={images.user1}
+            src={fileUrl || images.user1}
             alt="account upload"
             width={150}
             height={150}
@@ -43,7 +71,7 @@ const account = () => {
           <p className={Style.account_box_img_para}>Change Image</p>
         </div>
         <div className={Style.account_box_from}>
-          <From />
+          <From userData={userData} />
         </div>
       </div>
     </div>
