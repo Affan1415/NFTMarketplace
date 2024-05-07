@@ -15,12 +15,13 @@ const ProfilePage = () => {
                 const token = getTokenFromStorage();
                 if (!token) return; // If token is not found, return early
                 const userId = localStorage.getItem("id"); // Assuming you have a function to extract user ID from the token
-                const response = await axios.get(`http://127.0.0.1/api/v1/user/${userId}`, {
+                const response = await axios.get(`http://127.0.0.1:3000/api/v1/users/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setUserData(response.data);
+                console.log(response);
+                setUserData(response.data.data.user);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -36,6 +37,7 @@ const ProfilePage = () => {
                 <div>
                     <p>Name: {userData.name}</p>
                     <p>Email: {userData.email}</p>
+                    <p>Role: {userData.role}</p>
                     {/* Add more user data fields as needed */}
                 </div>
             ) : (

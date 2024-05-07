@@ -53,8 +53,8 @@ const Home = () => {
       <Filter />
       <NFTCard />
       <Title
-        heading="Browse by category"
-        paragraph="Explore the NFTs in the most featured categories."
+        heading="Top 5 nfts are below" 
+        paragraph="Explore the most featured NFTs."
       />
       <Category />
       <Subscribe />
