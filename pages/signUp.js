@@ -5,15 +5,19 @@ import Style from "../loginAndSignUp/loginAndSignUp.module.css";
 import Button from "../components/Button/Button"; // Import the Button component
 
 const SignUp = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
 
   const handleSignup = async () => {
     try {
       const response = await axios.post("http://127.0.0.1:3000/api/v1/users/signup", {
+        name,
         email,
         password,
+        passwordConfirm: confirmPassword
       });
       const { token, data } = response.data;
 
@@ -38,6 +42,15 @@ const SignUp = () => {
         <h1>SignUp</h1>
         <div className={Style.user_box_input}>
           <div className={Style.user_box_input_box}>
+            <label htmlFor="name">Full Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className={Style.user_box_input_box}>
             <label htmlFor="email">Email address</label>
             <input
               type="email"
@@ -52,6 +65,14 @@ const SignUp = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className={Style.user_box_input_box}>
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
           {/* Use Button component with onClick handler */}

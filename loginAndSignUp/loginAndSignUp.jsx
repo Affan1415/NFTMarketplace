@@ -35,6 +35,7 @@ const LoginAndSignUp = () => {
         email,
         password,
       });
+      console.log(response);
       console.log(response.data.data.user._id);
       const token = response.data.token;
       console.log("token",token);
@@ -42,6 +43,7 @@ const LoginAndSignUp = () => {
       // Save the token to local storage
       localStorage.setItem('token', token);
       localStorage.setItem('id', response.data.data.user._id);
+      localStorage.setItem('name', response.data.data.user.name);
 
       // Redirect the user to the main page
     router.push('/myprofile');
@@ -108,7 +110,7 @@ const LoginAndSignUp = () => {
               >
                 <p>Password</p>
                 <p>
-                  <a href="#">Forget password</a>
+                  <a href="/forgetpass">Forget password</a>
                 </p>
               </label>
               <input

@@ -1,15 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaUserAlt, FaRegImage, FaUserEdit } from "react-icons/fa";
 import { MdHelpCenter } from "react-icons/md";
 import { TbDownloadOff, TbDownload } from "react-icons/tb";
 import Link from "next/link";
 
-//INTERNAL IMPORT
+// INTERNAL IMPORT
 import Style from "./Profile.module.css";
 import images from "../../../img";
 
 const Profile = () => {
+  const [name, setName] = useState(""); // State variable to store the user's name
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // Retrieve the user's name from local storage
+        const nameFromStorage = localStorage.getItem("name");
+        setName(nameFromStorage); // Set the retrieved name to the state variable
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <div className={Style.profile}>
       <div className={Style.profile_account}>
@@ -22,12 +38,14 @@ const Profile = () => {
         />
 
         <div className={Style.profile_account_info}>
-          <p>Shoaib Bhai</p>
+          <p>{name}</p> {/* Display the user's name */}
           <small>X038499382920203...</small>
         </div>
       </div>
 
+      {/* Profile menu items */}
       <div className={Style.profile_menu}>
+        {/* First column */}
         <div className={Style.profile_menu_one}>
           <div className={Style.profile_menu_one_item}>
             <FaUserAlt />
@@ -49,6 +67,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Second column */}
         <div className={Style.profile_menu_two}>
           <div className={Style.profile_menu_one_item}>
             <MdHelpCenter />
@@ -59,7 +78,7 @@ const Profile = () => {
           <div className={Style.profile_menu_one_item}>
             <TbDownload />
             <p>
-              <Link href={{ pathname: "/disconnet" }}>Disconnet</Link>
+              <Link href={{ pathname: "/disconnect" }}>Disconnect</Link>
             </p>
           </div>
         </div>
